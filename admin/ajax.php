@@ -49,14 +49,16 @@
 			header('Location:./login.php?err=4');//输入错误或未输入验证码
 		}
 		if (strtolower(purge($_REQUEST['authcode']))==$_SESSION['authcode']) {//strtolower转化为小写的函数		
-			if($user == HT_USER && $pass == HT_PASS){
+			if($user == HT_USER && $pass == HT_PASS){//登录成功
 				$cookie = make_password(16);
 				setcookie('ADMIN_COOKIE_DL', $cookie, time() + 36000, '/');//输入正确
 				$config_db = $DB->query("update `{$db_first}config` set `code`='{$cookie}' where `code_key`='cookie'");
 				$config = $DB->fetch($config_db);
+				$_SESSION['authcode'] = "";//SESSION重置，不重置则验证码不会刷新
 				header('Location:./');
 				exit;
 			}else{
+				$_SESSION['authcode'] = "";//SESSION重置，不重置则验证码不会刷新
 				header('Location:./login.php?err=2');//输入错误
 				exit;
 			}
